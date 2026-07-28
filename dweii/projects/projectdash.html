@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Projects - DWEI</title>
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+    font-family:Arial, Helvetica, sans-serif;
+    background:#ececec;
+    padding:20px;
+}
+
+.dashboard{
+    max-width:1200px;
+    margin:auto;
+    min-height:95vh;
+    background:#fff;
+    border-radius:20px;
+    overflow:hidden;
+    box-shadow:0 15px 40px rgba(0,0,0,.15);
+}
+
+header{
+    background:#000;
+    color:#fff;
+    padding:25px;
+    text-align:center;
+}
+
+header h1{
+    font-size:2rem;
+}
+
+.content{
+    display:flex;
+    min-height:calc(95vh - 110px);
+}
+
+.sidebar{
+    width:230px;
+    background:#fafafa;
+    border-right:1px solid #ddd;
+}
+
+.sidebar a{
+    display:block;
+    text-decoration:none;
+    color:#333;
+    padding:18px 20px;
+    font-weight:bold;
+    transition:.25s;
+    border-bottom:1px solid #eee;
+}
+
+.sidebar a:hover,
+.sidebar .active{
+    background:#f8dbdf;
+    color:#fff;
+}
+
+main{
+    flex:1;
+    padding:35px;
+    position:relative;
+    overflow:hidden;
+}
+
+.section-title{
+    font-size:28px;
+    margin-bottom:25px;
+    color:#333;
+    text-align:center;
+}
+
+.lamp-section{
+    min-height:500px;
+    display:flex;
+    flex-direction:column;
+    justify-content:flex-start;
+    align-items:center;
+    position:relative;
+    padding-top:10px;
+    transition:.8s ease;
+}
+
+.lamp-section.hidden{
+    opacity:0;
+    transform:translateY(-40px);
+    pointer-events:none;
+    height:0;
+    min-height:0;
+    padding:0;
+    overflow:hidden;
+}
+
+.lamp-title{
+    text-align:center;
+    margin-bottom:20px;
+}
+
+.lamp-title h2{
+    font-size:30px;
+    margin-bottom:8px;
+}
+
+.lamp-title p{
+    color:#666;
+    font-size:15px;
+}
+
+.lamp{
+    position:relative;
+    width:220px;
+    height:380px;
+    display:flex;
+    justify-content:center;
+}
+
+.ceiling-wire{
+    position:absolute;
+    top:0;
+    width:7px;
+    height:90px;
+    background:#222;
+    border-radius:10px;
+}
+
+.lamp-shade{
+    position:absolute;
+    top:78px;
+    width:180px;
+    height:105px;
+    background:#111;
+    clip-path:polygon(28% 0,72% 0,100% 100%,0 100%);
+    z-index:4;
+    transition:.5s ease;
+}
+
+.lamp-shade::after{
+    content:"";
+    position:absolute;
+    left:12px;
+    right:12px;
+    bottom:0;
+    height:8px;
+    background:#333;
+    border-radius:8px;
+}
+
+.bulb{
+    position:absolute;
+    top:165px;
+    width:55px;
+    height:70px;
+    background:#555;
+    border-radius:50% 50% 45% 45%;
+    z-index:3;
+    transition:.5s ease;
+}
+
+.bulb::before{
+    content:"";
+    position:absolute;
+    width:28px;
+    height:20px;
+    background:#333;
+    top:-12px;
+    left:13px;
+    border-radius:5px;
+}
+
+.bulb.on{
+    background:#ffe98a;
+    box-shadow:
+        0 0 25px #ffe98a,
+        0 0 60px rgba(255,233,138,.8),
+        0 0 110px rgba(255,233,138,.55);
+}
+
+.light-beam{
+    position:absolute;
+    top:175px;
+    width:360px;
+    height:290px;
+    background:linear-gradient(
+        to bottom,
+        rgba(255,235,150,.35),
+        rgba(255,235,150,.05)
+    );
+    clip-path:polygon(43% 0,57% 0,100% 100%,0 100%);
+    opacity:0;
+    pointer-events:none;
+    transition:.7s ease;
+}
+
+.light-beam.on{
+    opacity:1;
+}
+
+.pull-cord{
+    position:absolute;
+    top:175px;
+    right:3px;
+    width:60px;
+    height:190px;
+    cursor:grab;
+    touch-action:none;
+    z-index:10;
+}
+
+.pull-cord:active{
+    cursor:grabbing;
+}
+
+.cord-line{
+    position:absolute;
+    left:50%;
+    top:0;
+    width:4px;
+    height:135px;
+    background:#444;
+    border-radius:5px;
+    transform:translateX(-50%);
+    transition:height .2s ease;
+}
+
+.cord-handle{
+    position:absolute;
+    left:50%;
+    top:130px;
+    width:28px;
+    height:28px;
+    background:#111;
+    border:5px solid #fff;
+    border-radius:50%;
+    transform:translateX(-50%);
+    box-shadow:0 4px 10px rgba(0,0,0,.3);
+    transition:top .2s ease;
+}
+
+.pull-label{
+    position:absolute;
+    top:350px;
+    font-size:14px;
+    font-weight:bold;
+    color:#555;
+    animation:bounce 1.5s infinite;
+}
+
+@keyframes bounce{
+    0%,100%{transform:translateY(0);}
+    50%{transform:translateY(8px);}
+}
+
+@keyframes lampSwing{
+    0%{transform:rotate(0);}
+    25%{transform:rotate(5deg);}
+    50%{transform:rotate(-4deg);}
+    75%{transform:rotate(2deg);}
+    100%{transform:rotate(0);}
+}
+
+.lamp.swing{
+    transform-origin:top center;
+    animation:lampSwing .8s ease;
+}
+
+.projects-content{
+    opacity:0;
+    transform:translateY(60px);
+    max-height:0;
+    overflow:hidden;
+    pointer-events:none;
+    transition:opacity .8s ease, transform .8s ease, max-height 1.2s ease;
+}
+
+.projects-content.show{
+    opacity:1;
+    transform:translateY(0);
+    max-height:5000px;
+    overflow:visible;
+    pointer-events:auto;
+}
+
+.cards{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+    gap:25px;
+}
+
+.card{
+    background:#f8f8f8;
+    border-radius:18px;
+    overflow:hidden;
+    text-decoration:none;
+    color:#222;
+    transition:.3s;
+    border:2px solid transparent;
+    opacity:0;
+    transform:translateY(45px);
+}
+
+.projects-content.show .card{
+    opacity:1;
+    transform:translateY(0);
+}
+
+.projects-content.show .card:nth-child(1){
+    transition:transform .6s .1s,opacity .6s .1s,border-color .3s,box-shadow .3s;
+}
+
+.projects-content.show .card:nth-child(2){
+    transition:transform .6s .25s,opacity .6s .25s,border-color .3s,box-shadow .3s;
+}
+
+.projects-content.show .card:nth-child(3){
+    transition:transform .6s .4s,opacity .6s .4s,border-color .3s,box-shadow .3s;
+}
+
+.projects-content.show .card:nth-child(4){
+    transition:transform .6s .55s,opacity .6s .55s,border-color .3s,box-shadow .3s;
+}
+
+.card:hover{
+    transform:translateY(-8px);
+    border-color:#000;
+    box-shadow:0 12px 25px rgba(0,0,0,.18);
+}
+
+.banner{
+    height:150px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:60px;
+    color:#fff;
+    background:linear-gradient(135deg,#111,#333);
+    overflow:hidden;
+    position:relative;
+}
+
+.banner::before{
+    content:"";
+    position:absolute;
+    width:130px;
+    height:130px;
+    border-radius:50%;
+    background:rgba(255,255,255,.08);
+    top:-50px;
+    right:-30px;
+}
+
+.banner::after{
+    content:"";
+    position:absolute;
+    width:100px;
+    height:100px;
+    border-radius:50%;
+    background:rgba(255,255,255,.06);
+    bottom:-45px;
+    left:-25px;
+}
+
+.banner-icon{
+    position:relative;
+    z-index:2;
+}
+
+.info{
+    padding:20px;
+}
+
+.info h2{
+    margin-bottom:10px;
+}
+
+.badge{
+    display:inline-block;
+    background:#e8f1ff;
+    color:#007bff;
+    padding:5px 12px;
+    border-radius:20px;
+    font-size:12px;
+    font-weight:bold;
+    margin-bottom:15px;
+}
+
+.info p{
+    color:#555;
+    margin-bottom:18px;
+    line-height:1.5;
+}
+
+.btn{
+    display:inline-block;
+    background:#000;
+    color:#fff;
+    padding:10px 18px;
+    border-radius:8px;
+    font-weight:bold;
+}
+
+.skip-btn{
+    margin-top:5px;
+    border:none;
+    background:transparent;
+    color:#777;
+    text-decoration:underline;
+    cursor:pointer;
+    font-size:14px;
+}
+
+footer{
+    text-align:center;
+    padding:15px;
+    color:#777;
+    border-top:1px solid #eee;
+}
+
+@media(max-width:768px){
+    body{padding:10px;}
+
+    .content{flex-direction:column;}
+
+    .sidebar{
+        width:100%;
+        display:flex;
+        overflow-x:auto;
+        border-right:none;
+        border-bottom:1px solid #ddd;
+    }
+
+    .sidebar a{
+        min-width:120px;
+        text-align:center;
+        border-bottom:none;
+        border-right:1px solid #eee;
+        padding:16px;
+        font-size:.9rem;
+    }
+
+    main{padding:20px;}
+
+    .section-title{font-size:24px;}
+
+    .cards{grid-template-columns:1fr;}
+
+    .banner{
+        height:150px;
+        font-size:55px;
+    }
+
+    header h1{font-size:1.7rem;}
+
+    .lamp-section{min-height:460px;}
+
+    .lamp-title h2{font-size:25px;}
+
+    .lamp{
+        transform:scale(.9);
+        transform-origin:top center;
+    }
+
+    .light-beam{width:300px;}
+}
+
+@media(max-width:480px){
+    main{padding:18px 15px;}
+
+    .lamp{
+        transform:scale(.78);
+        margin-bottom:-60px;
+    }
+
+    .lamp-title h2{font-size:22px;}
+
+    .lamp-title p{font-size:13px;}
+
+    .section-title{margin-bottom:18px;}
+}
+</style>
+</head>
+
+<body>
+
+<div class="dashboard">
+
+<header>
+    <h1>DWEI</h1>
+</header>
+
+<div class="content">
+
+<nav class="sidebar">
+    <a href="../index.html">🏠 Home</a>
+    <a class="active" href="#">📂 Projects</a>
+    <a href="../about/about.html">👤 About</a>
+    <a href="../games/games.html">🎮 Games</a>
+    <a href="../interest/interest.html">⭐ Interests</a>
+    <a href="../social/social.html">🌐 Social</a>
+</nav>
+
+<main>
+
+<section class="lamp-section" id="lampSection">
+
+    <div class="lamp-title">
+        <h2>Discover My Projects</h2>
+        <p>Pull the lamp cord to reveal my work.</p>
+    </div>
+
+    <div class="lamp" id="lamp">
+        <div class="ceiling-wire"></div>
+        <div class="lamp-shade"></div>
+        <div class="bulb" id="bulb"></div>
+        <div class="light-beam" id="lightBeam"></div>
+
+        <div class="pull-cord" id="pullCord">
+            <div class="cord-line" id="cordLine"></div>
+            <div class="cord-handle" id="cordHandle"></div>
+        </div>
+
+        <div class="pull-label">↓ Pull Me</div>
+    </div>
+
+    <button class="skip-btn" id="showProjectsButton">
+        Show projects without pulling
+    </button>
+
+</section>
+
+<section class="projects-content" id="projectsContent">
+
+<h2 class="section-title">My Projects</h2>
+
+<div class="cards">
+
+<a class="card" href="memorygame/mmrg.html">
+    <div class="banner">
+        <span class="banner-icon">🧠</span>
+    </div>
+    <div class="info">
+        <h2>Memory Game</h2>
+        <div class="badge">HTML • CSS • JavaScript</div>
+        <p>Match all cards before time runs out.</p>
+        <span class="btn">Open Project →</span>
+    </div>
+</a>
+
+<a class="card" href="hanni/index.html">
+    <div class="banner" style="background:linear-gradient(135deg,#10b981,#064e3b)">
+        <span class="banner-icon">🏃</span>
+    </div>
+    <div class="info">
+        <h2>Jumping Hanni</h2>
+        <div class="badge">HTML • CSS • JavaScript</div>
+        <p>An endless runner game with increasing speed and smooth physics.</p>
+        <span class="btn">Open Project →</span>
+    </div>
+</a>
+
+<a class="card" href="resumemaker/resume.html">
+    <div class="banner" style="background:linear-gradient(135deg,#f97316,#ef4444)">
+        <span class="banner-icon">📄</span>
+    </div>
+    <div class="info">
+        <h2>Online Resume</h2>
+        <div class="badge">HTML • CSS • JavaScript</div>
+        <p>Create and print a professional resume directly from your browser.</p>
+        <span class="btn">Open Project →</span>
+    </div>
+</a>
+
+<a class="card" href="slot/slot.html">
+    <div class="banner" style="background:linear-gradient(135deg,#7c3aed,#312e81)">
+        <span class="banner-icon">🎰</span>
+    </div>
+    <div class="info">
+        <h2>Slot Machine</h2>
+        <div class="badge">HTML • CSS • JavaScript</div>
+        <p>Spin four reels, manage credits and try to win the jackpot.</p>
+        <span class="btn">Open Project →</span>
+    </div>
+</a>
+
+</div>
+</section>
+
+</main>
+</div>
+
+<footer>© 2026 DWEI Portfolio</footer>
+
+</div>
+
+<script>
+const pullCord = document.getElementById("pullCord");
+const cordLine = document.getElementById("cordLine");
+const cordHandle = document.getElementById("cordHandle");
+const bulb = document.getElementById("bulb");
+const lightBeam = document.getElementById("lightBeam");
+const lamp = document.getElementById("lamp");
+const lampSection = document.getElementById("lampSection");
+const projectsContent = document.getElementById("projectsContent");
+const showProjectsButton = document.getElementById("showProjectsButton");
+
+let dragging = false;
+let startY = 0;
+let pullDistance = 0;
+let projectsRevealed = false;
+
+function startPull(event){
+    if(projectsRevealed) return;
+
+    dragging = true;
+    startY = event.clientY;
+    pullCord.setPointerCapture(event.pointerId);
+}
+
+function movePull(event){
+    if(!dragging || projectsRevealed) return;
+
+    pullDistance = event.clientY - startY;
+    pullDistance = Math.max(0,Math.min(pullDistance,90));
+
+    cordLine.style.height = (135 + pullDistance) + "px";
+    cordHandle.style.top = (130 + pullDistance) + "px";
+
+    if(pullDistance >= 65){
+        revealProjects();
+    }
+}
+
+function endPull(){
+    dragging = false;
+
+    if(!projectsRevealed){
+        cordLine.style.height = "135px";
+        cordHandle.style.top = "130px";
+    }
+}
+
+function revealProjects(){
+    if(projectsRevealed) return;
+
+    projectsRevealed = true;
+    dragging = false;
+
+    bulb.classList.add("on");
+    lightBeam.classList.add("on");
+    lamp.classList.add("swing");
+
+    cordLine.style.height = "205px";
+    cordHandle.style.top = "200px";
+
+    setTimeout(function(){
+        lampSection.classList.add("hidden");
+        projectsContent.classList.add("show");
+    },900);
+}
+
+pullCord.addEventListener("pointerdown",startPull);
+pullCord.addEventListener("pointermove",movePull);
+pullCord.addEventListener("pointerup",endPull);
+pullCord.addEventListener("pointercancel",endPull);
+
+pullCord.addEventListener("click",function(){
+    if(!projectsRevealed && pullDistance < 20){
+        revealProjects();
+    }
+});
+
+showProjectsButton.addEventListener("click",revealProjects);
+</script>
+
+</body>
+</html>

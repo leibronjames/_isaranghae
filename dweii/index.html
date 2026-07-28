@@ -1,0 +1,730 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>DWEI Dashboard</title>
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+    font-family:Arial, Helvetica, sans-serif;
+    background:#ececec;
+    padding:20px;
+}
+
+/* =========================
+   SLIDING ENTRANCE
+========================= */
+
+.entrance{
+    position:fixed;
+    inset:0;
+    z-index:9999;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    overflow:hidden;
+    background:#000;
+}
+
+.entrance.hide{
+    pointer-events:none;
+}
+
+/* Left and right sliding panels */
+
+.slider-panel{
+    position:absolute;
+    top:0;
+    width:50%;
+    height:100%;
+    background:#000;
+    transition:transform 1.1s cubic-bezier(.77,0,.18,1);
+}
+
+.slider-left{
+    left:0;
+    border-right:1px solid rgba(255,255,255,.12);
+}
+
+.slider-right{
+    right:0;
+    border-left:1px solid rgba(255,255,255,.12);
+}
+
+/* Panels slide away */
+
+.entrance.open .slider-left{
+    transform:translateX(-100%);
+}
+
+.entrance.open .slider-right{
+    transform:translateX(100%);
+}
+
+/* Center entrance content */
+
+.entrance-content{
+    position:relative;
+    z-index:3;
+    text-align:center;
+    color:#fff;
+    padding:25px;
+    transition:
+        opacity .45s ease,
+        transform .45s ease;
+}
+
+.entrance.open .entrance-content{
+    opacity:0;
+    transform:scale(.85);
+}
+
+.logo{
+    font-size:clamp(48px,10vw,100px);
+    letter-spacing:12px;
+    margin-bottom:10px;
+}
+
+.subtitle{
+    color:#bbb;
+    font-size:15px;
+    letter-spacing:4px;
+    text-transform:uppercase;
+    margin-bottom:35px;
+}
+
+/* Visit button */
+
+.visit-btn{
+    position:relative;
+    border:2px solid #fff;
+    background:transparent;
+    color:#fff;
+    padding:15px 35px;
+    border-radius:50px;
+    font-size:16px;
+    font-weight:bold;
+    letter-spacing:1px;
+    cursor:pointer;
+    overflow:hidden;
+    transition:.3s;
+}
+
+.visit-btn::before{
+    content:"";
+    position:absolute;
+    inset:0;
+    background:#fff;
+    transform:translateX(-105%);
+    transition:.35s ease;
+    z-index:-1;
+}
+
+.visit-btn:hover{
+    color:#000;
+    transform:translateY(-3px);
+}
+
+.visit-btn:hover::before{
+    transform:translateX(0);
+}
+
+.visit-btn:active{
+    transform:scale(.96);
+}
+
+.hint{
+    margin-top:20px;
+    font-size:12px;
+    color:#777;
+}
+
+/* Decorative lines */
+
+.line{
+    position:absolute;
+    background:rgba(255,255,255,.08);
+}
+
+.line-one{
+    width:1px;
+    height:75%;
+    left:18%;
+    top:12.5%;
+}
+
+.line-two{
+    width:1px;
+    height:60%;
+    right:18%;
+    top:20%;
+}
+
+.line-three{
+    height:1px;
+    width:70%;
+    top:25%;
+    left:15%;
+}
+
+.line-four{
+    height:1px;
+    width:55%;
+    bottom:20%;
+    left:22.5%;
+}
+
+/* =========================
+   DASHBOARD
+========================= */
+
+.dashboard{
+    max-width:1200px;
+    margin:auto;
+    background:#fff;
+    border-radius:20px;
+    overflow:hidden;
+    box-shadow:0 15px 40px rgba(0,0,0,.15);
+    min-height:calc(100vh - 40px);
+}
+
+header{
+    background:#000;
+    color:#fff;
+    padding:25px;
+    text-align:center;
+}
+
+header h1{
+    font-size:2rem;
+}
+
+.content{
+    display:flex;
+    min-height:calc(100vh - 155px);
+}
+
+/* Sidebar */
+
+.sidebar{
+    width:230px;
+    flex-shrink:0;
+    background:#fafafa;
+    border-right:1px solid #ddd;
+}
+
+.sidebar a{
+    display:block;
+    padding:18px 20px;
+    text-decoration:none;
+    color:#333;
+    font-weight:bold;
+    border-bottom:1px solid #eee;
+    transition:.25s;
+}
+
+.sidebar a:hover,
+.sidebar a.active{
+    background:#f8dbdf;
+    color:#fff;
+}
+
+/* Main */
+
+main{
+    flex:1;
+    padding:35px;
+    min-width:0;
+}
+
+.section-title{
+    font-size:28px;
+    margin-bottom:20px;
+    color:#222;
+}
+
+/* Cards */
+
+.cards{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+    gap:20px;
+}
+
+.card{
+    background:#f8f8f8;
+    border-radius:18px;
+    padding:25px;
+    text-align:center;
+    border:2px solid transparent;
+    transition:.3s;
+}
+
+.card:hover{
+    transform:translateY(-6px);
+    border-color:#000;
+    box-shadow:0 12px 25px rgba(0,0,0,.12);
+}
+
+.card-icon{
+    font-size:36px;
+}
+
+.card .num{
+    font-size:32px;
+    font-weight:bold;
+    margin:10px 0;
+}
+
+.card-label{
+    color:#555;
+}
+
+/* Panels */
+
+.panel{
+    background:#f8f8f8;
+    border-radius:18px;
+    padding:25px;
+    margin-top:25px;
+}
+
+.panel h2{
+    margin-bottom:15px;
+    font-size:21px;
+}
+
+.panel p{
+    color:#555;
+    line-height:1.8;
+}
+
+#verse{
+    font-style:italic;
+    line-height:1.7;
+}
+
+#ref{
+    display:block;
+    margin-top:10px;
+    color:#333;
+}
+
+#clock{
+    font-size:20px;
+    font-weight:bold;
+    color:#222;
+}
+
+/* Footer */
+
+footer{
+    text-align:center;
+    padding:15px;
+    color:#777;
+    border-top:1px solid #eee;
+}
+
+/* =========================
+   MOBILE
+========================= */
+
+@media(max-width:768px){
+
+    body{
+        padding:10px;
+    }
+
+    .dashboard{
+        min-height:calc(100vh - 20px);
+    }
+
+    .content{
+        flex-direction:column;
+    }
+
+    .sidebar{
+        width:100%;
+        display:flex;
+        overflow-x:auto;
+        border-right:none;
+        border-bottom:1px solid #ddd;
+        scrollbar-width:thin;
+    }
+
+    .sidebar a{
+        min-width:120px;
+        text-align:center;
+        border-bottom:none;
+        border-right:1px solid #eee;
+        padding:16px 12px;
+        font-size:14px;
+    }
+
+    main{
+        padding:25px 20px;
+    }
+
+    .section-title{
+        text-align:center;
+        font-size:25px;
+    }
+
+    .cards{
+        grid-template-columns:repeat(2,1fr);
+    }
+
+    .logo{
+        letter-spacing:7px;
+    }
+
+    .subtitle{
+        font-size:12px;
+        letter-spacing:2px;
+    }
+}
+
+@media(max-width:480px){
+
+    .cards{
+        grid-template-columns:1fr;
+    }
+
+    .card{
+        padding:20px;
+    }
+
+    .panel{
+        padding:20px;
+    }
+
+    .visit-btn{
+        width:100%;
+        max-width:260px;
+    }
+}
+
+/* Reduced animation preference */
+
+@media(prefers-reduced-motion:reduce){
+
+    .slider-panel,
+    .entrance-content,
+    .visit-btn{
+        transition:none;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<!-- Entrance screen -->
+
+<div class="entrance" id="entrance">
+
+    <div class="slider-panel slider-left"></div>
+    <div class="slider-panel slider-right"></div>
+
+    <div class="line line-one"></div>
+    <div class="line line-two"></div>
+    <div class="line line-three"></div>
+    <div class="line line-four"></div>
+
+    <div class="entrance-content">
+
+        <h1 class="logo">ANDREI</h1>
+
+        <p class="subtitle">
+            Personal Portfolio
+        </p>
+
+        <button class="visit-btn" id="visitButton">
+            Visit Dashboard →
+        </button>
+
+        <p class="hint">
+            Click to enter
+        </p>
+
+    </div>
+
+</div>
+
+<!-- Main dashboard -->
+
+<div class="dashboard">
+
+    <header>
+        <h1>DWEI</h1>
+    </header>
+
+    <div class="content">
+
+        <nav class="sidebar">
+
+            <a class="active" href="#">
+                🏠 Home
+            </a>
+
+            <a href="projects/projectdash.html">
+                📂 Projects
+            </a>
+
+            <a href="about/about.html">
+                👤 About
+            </a>
+
+            <a href="games/games.html">
+                🎮 Games
+            </a>
+
+            <a href="interest/interest.html">
+                ⭐ Interests
+            </a>
+
+            <a href="social/social.html">
+                🌐 Social
+            </a>
+
+        </nav>
+
+        <main>
+
+            <h2 class="section-title">
+                Dashboard
+            </h2>
+
+            <div class="cards">
+
+                <div class="card">
+
+                    <div class="card-icon">
+                        📂
+                    </div>
+
+                    <div class="num">
+                        4
+                    </div>
+
+                    <div class="card-label">
+                        Projects
+                    </div>
+
+                </div>
+
+                <div class="card">
+
+                    <div class="card-icon">
+                        🎮
+                    </div>
+
+                    <div class="num">
+                        2
+                    </div>
+
+                    <div class="card-label">
+                        Games
+                    </div>
+
+                </div>
+
+                <div class="card">
+
+                    <div class="card-icon">
+                        👁️
+                    </div>
+
+                    <div class="num">
+                        —
+                    </div>
+
+                    <div class="card-label">
+                        Portfolio Views
+                    </div>
+
+                </div>
+
+                <div class="card">
+
+                    <div class="card-icon">
+                        🚀
+                    </div>
+
+                    <div class="num" style="font-size:22px">
+                        Tycoon Game
+                    </div>
+
+                    <div class="card-label">
+                        Current Project
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="panel">
+
+                <h2>
+                    📅 Recent Updates
+                </h2>
+
+                <p>
+                    ✔ Created Portfolio Website<br>
+                    ✔ Finished Dino Runner<br>
+                    ✔ Added Firebase Leaderboard<br>
+                    ✔ Started Tycoon Project
+                </p>
+
+            </div>
+
+            <div class="panel">
+
+                <h2>
+                    📖 Daily Bible Verse
+                </h2>
+
+                <p id="verse">
+                    Loading...
+                </p>
+
+                <b id="ref"></b>
+
+            </div>
+
+            <div class="panel">
+
+                <h2>
+                    🕒 Current Time
+                </h2>
+
+                <p id="clock"></p>
+
+            </div>
+
+        </main>
+
+    </div>
+
+    <footer>
+        © 2026 DWEI Portfolio
+    </footer>
+
+</div>
+
+<script>
+const entrance = document.getElementById("entrance");
+const visitButton = document.getElementById("visitButton");
+const clockElement = document.getElementById("clock");
+const verseElement = document.getElementById("verse");
+const referenceElement = document.getElementById("ref");
+
+/*
+    sessionStorage remembers the entrance was opened
+    while the current browser tab remains open.
+
+    When the user opens a project and presses Back,
+    the entrance will not appear again.
+*/
+
+const dashboardVisited =
+    sessionStorage.getItem("dweiDashboardVisited");
+
+if(dashboardVisited === "true"){
+
+    entrance.style.display = "none";
+
+}else{
+
+    entrance.style.display = "flex";
+
+}
+
+/* Open dashboard */
+
+function openDashboard(){
+
+    sessionStorage.setItem(
+        "dweiDashboardVisited",
+        "true"
+    );
+
+    entrance.classList.add("open");
+
+    setTimeout(function(){
+
+        entrance.classList.add("hide");
+        entrance.style.display = "none";
+
+    },1150);
+}
+
+visitButton.addEventListener(
+    "click",
+    openDashboard
+);
+
+/* Current time */
+
+function updateClock(){
+
+    const now = new Date();
+
+    clockElement.textContent =
+        now.toLocaleString();
+
+}
+
+updateClock();
+
+setInterval(
+    updateClock,
+    1000
+);
+
+/* Bible verse */
+
+async function loadVerse(){
+
+    try{
+
+        const response = await fetch(
+            "https://bible-api.com/john%203:16"
+        );
+
+        if(!response.ok){
+            throw new Error("Verse request failed.");
+        }
+
+        const data = await response.json();
+
+        verseElement.textContent =
+            '"' + data.text.trim() + '"';
+
+        referenceElement.textContent =
+            "— " + data.reference;
+
+    }catch(error){
+
+        verseElement.textContent =
+            '"For God so loved the world that he gave his one and only Son."';
+
+        referenceElement.textContent =
+            "— John 3:16";
+
+    }
+}
+
+loadVerse();
+</script>
+
+</body>
+</html>
