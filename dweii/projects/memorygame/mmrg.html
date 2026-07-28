@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Memory Game</title>
+<button class="back-btn" onclick="window.location.href='../projectdash.html'">
+    ← Back
+</button>
+<style>
+    
+body{font-family:Arial;margin:0;background:#f3f4f6;display:flex;flex-direction:column;align-items:center}
+.top{width:min(900px,95vw);display:flex;justify-content:space-between;align-items:center;padding:16px}
+#board{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;width:min(900px,95vw)}
+.card{aspect-ratio:1;perspective:700px;cursor:pointer}
+.inner{position:relative;width:100%;height:100%;transition:.4s;transform-style:preserve-3d}
+.flip .inner{transform:rotateY(180deg)}
+.face{position:absolute;inset:0;border-radius:12px;display:flex;align-items:center;justify-content:center;
+backface-visibility:hidden;background:#fff;border:2px solid #ddd;font-size:2rem}
+.back{background:#4f46e5;color:#fff}
+.front{transform:rotateY(180deg)}
+@media(max-width:700px){#board{grid-template-columns:repeat(4,1fr)}}
+button{padding:8px 14px}
+#win{display:none;padding:16px;font-size:1.2rem}
+</style></head><body>
+<div class="top"><h2>Memory Game</h2><div>⏱ <span id=t>00:00</span> <button onclick="start()">Restart</button></div></div>
+<div id=board></div><div id=win></div>
+<script>
+const icons=["🍎","🍌","🍇","🍒","🍉","🍍","🥝","🍓","🥥","🍋"];
+let first,second,lock=false,matched=0,time=0,intv;
+function fmt(s){return String(Math.floor(s/60)).padStart(2,"0")+":"+String(s%60).padStart(2,"0")}
+function start(){
+clearInterval(intv);time=0;document.getElementById("t").textContent="00:00";
+document.getElementById("win").style.display="none";
+intv=setInterval(()=>{time++;t.textContent=fmt(time)},1000);
+matched=0;lock=false;first=second=null;
+let arr=[...icons,...icons].sort(()=>Math.random()-.5);
+board.innerHTML="";
+arr.forEach(v=>{
+let c=document.createElement("div");c.className="card";
+c.innerHTML='<div class="inner"><div class="face back">?</div><div class="face front">'+v+'</div></div>';
+c.dataset.v=v;
+c.onclick=()=>{
+if(lock||c.classList.contains("flip"))return;
+c.classList.add("flip");
+if(!first){first=c;return;}
+second=c;lock=true;
+if(first.dataset.v===second.dataset.v){
+matched+=2;first=second=null;lock=false;
+if(matched===20){clearInterval(intv);win.style.display="block";win.innerHTML="🎉 You Win!<br>Time: "+fmt(time);}
+}else{
+setTimeout(()=>{first.classList.remove("flip");second.classList.remove("flip");first=second=null;lock=false;},800);
+}
+};
+board.appendChild(c);
+});
+}
+start();
+</script></body></html>
