@@ -1,0 +1,1429 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+
+<title>Dino Runner - DWEI</title>
+
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Arial,Helvetica,sans-serif;
+    user-select:none;
+}
+
+:root{
+    --black:#111111;
+    --white:#ffffff;
+    --pink:#f6d6de;
+    --pink-dark:#e8b4c2;
+    --gray:#6f6f6f;
+    --glass:rgba(17,17,17,.82);
+    --line:rgba(255,255,255,.15);
+}
+
+html,
+body{
+    width:100%;
+    height:100%;
+    overflow:hidden;
+    touch-action:none;
+    overscroll-behavior:none;
+    -webkit-touch-callout:none;
+    -webkit-text-size-adjust:100%;
+}
+
+body{
+    background:url("bg.jpg") center/cover no-repeat;
+    color:var(--black);
+}
+
+button,
+input{
+    font:inherit;
+}
+
+button{
+    cursor:pointer;
+    -webkit-tap-highlight-color:transparent;
+}
+
+#game{
+    width:100vw;
+    height:100vh;
+    min-height:100dvh;
+    position:relative;
+    overflow:hidden;
+}
+
+#game::before{
+    content:"";
+    position:absolute;
+    inset:0;
+    background:linear-gradient(
+        to bottom,
+        rgba(0,0,0,.22),
+        rgba(0,0,0,.03) 55%,
+        rgba(0,0,0,.28)
+    );
+    z-index:1;
+    pointer-events:none;
+}
+
+/* BACK BUTTON */
+
+.back-btn{
+    position:absolute;
+    top:20px;
+    left:20px;
+    z-index:999;
+    min-height:48px;
+    padding:0 20px;
+    border:1px solid rgba(255,255,255,.2);
+    border-radius:999px;
+    background:var(--black);
+    color:var(--white);
+    font-size:15px;
+    font-weight:800;
+    box-shadow:0 12px 30px rgba(0,0,0,.25);
+    transition:transform .2s ease,background .2s ease;
+}
+
+.back-btn:hover{
+    background:var(--pink);
+    color:var(--black);
+    transform:translateY(-2px);
+}
+
+.back-btn:active{
+    transform:scale(.96);
+}
+
+/* SCORE BAR */
+
+#topbar{
+    position:absolute;
+    top:20px;
+    left:50%;
+    transform:translateX(-50%);
+    width:min(720px,calc(100% - 220px));
+    z-index:100;
+}
+
+.panel{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:12px;
+}
+
+.box{
+    min-height:64px;
+    padding:10px 16px;
+    border:1px solid var(--line);
+    border-radius:18px;
+    background:var(--glass);
+    color:var(--white);
+    backdrop-filter:blur(12px);
+    -webkit-backdrop-filter:blur(12px);
+    box-shadow:0 12px 28px rgba(0,0,0,.22);
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    gap:3px;
+    font-size:12px;
+    font-weight:700;
+    letter-spacing:1.2px;
+    text-transform:uppercase;
+}
+
+.box span{
+    color:var(--pink);
+    font-size:22px;
+    letter-spacing:0;
+}
+
+/* PAUSE */
+
+#buttons{
+    position:absolute;
+    right:20px;
+    top:20px;
+    z-index:100;
+}
+
+#buttons button{
+    width:54px;
+    height:54px;
+    border:1px solid rgba(255,255,255,.2);
+    border-radius:50%;
+    background:var(--black);
+    color:var(--white);
+    font-size:21px;
+    font-weight:900;
+    box-shadow:0 12px 28px rgba(0,0,0,.25);
+    transition:.2s ease;
+}
+
+#buttons button:hover{
+    background:var(--pink);
+    color:var(--black);
+    transform:translateY(-2px);
+}
+
+/* GAME OBJECTS */
+
+#player{
+    position:absolute;
+    left:70px;
+    bottom:40px;
+    width:120px;
+    height:auto;
+    z-index:5;
+    animation:run .25s infinite alternate;
+    filter:drop-shadow(0 9px 7px rgba(0,0,0,.2));
+}
+
+#obs,
+#obs2{
+    position:absolute;
+    left:100%;
+    bottom:40px;
+    width:100px;
+    z-index:4;
+    filter:drop-shadow(0 8px 6px rgba(0,0,0,.18));
+}
+
+#obs2{
+    display:none;
+}
+
+@keyframes run{
+    from{transform:translateY(0)}
+    to{transform:translateY(-5px)}
+}
+
+/* START MENU + GAME OVER */
+
+#startMenu,
+#msg{
+    position:absolute;
+    inset:0;
+    z-index:600;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    flex-direction:column;
+    padding:24px;
+    background:rgba(0,0,0,.60);
+    backdrop-filter:blur(7px);
+    -webkit-backdrop-filter:blur(7px);
+    color:var(--white);
+    text-align:center;
+}
+
+#msg{
+    display:none;
+    z-index:650;
+}
+
+#startMenu::before,
+#msg::before{
+    content:"";
+    position:absolute;
+    width:min(470px,calc(100% - 32px));
+    height:min(610px,calc(100% - 32px));
+    max-height:610px;
+    border-radius:30px;
+    background:rgba(17,17,17,.93);
+    border:1px solid rgba(255,255,255,.14);
+    box-shadow:0 24px 70px rgba(0,0,0,.42);
+}
+
+#startMenu > *,
+#msg > *{
+    position:relative;
+    z-index:2;
+}
+
+#startMenu h1{
+    max-width:400px;
+    margin-bottom:6px;
+    font-size:clamp(2rem,6vw,3.6rem);
+    line-height:1;
+    letter-spacing:-2px;
+}
+
+#startMenu h1::after{
+    content:"";
+    display:block;
+    width:72px;
+    height:8px;
+    margin:18px auto 0;
+    border-radius:999px;
+    background:var(--pink);
+}
+
+#playerName{
+    width:min(340px,82vw);
+    min-height:52px;
+    margin-top:24px;
+    padding:0 18px;
+    border:2px solid transparent;
+    border-radius:16px;
+    outline:none;
+    background:var(--white);
+    color:var(--black);
+    font-size:17px;
+    text-align:center;
+    user-select:text;
+}
+
+#playerName:focus{
+    border-color:var(--pink);
+    box-shadow:0 0 0 4px rgba(246,214,222,.18);
+}
+
+#startMenu button,
+#restartBtn,
+#closeMsg{
+    width:min(340px,82vw);
+    min-height:50px;
+    margin-top:12px;
+    padding:0 22px;
+    border:none;
+    border-radius:16px;
+    background:var(--white);
+    color:var(--black);
+    font-size:15px;
+    font-weight:900;
+    letter-spacing:.4px;
+    transition:transform .18s ease,background .18s ease;
+}
+
+#startMenu #startBtn,
+#restartBtn{
+    margin-top:18px;
+    background:var(--pink);
+}
+
+#startMenu button:hover,
+#restartBtn:hover,
+#closeMsg:hover{
+    background:var(--pink-dark);
+    transform:translateY(-2px);
+}
+
+#startMenu button:active,
+#restartBtn:active,
+#closeMsg:active{
+    transform:scale(.97);
+}
+
+#gameOverText{
+    font-size:clamp(2.4rem,8vw,4.4rem);
+    font-weight:900;
+    letter-spacing:-2px;
+}
+
+#newRecord{
+    display:none;
+    margin-top:14px;
+    padding:8px 14px;
+    border-radius:999px;
+    background:var(--pink);
+    color:var(--black);
+    font-size:15px;
+    font-weight:900;
+}
+
+/* POPUPS */
+
+.popup{
+    position:absolute;
+    top:50%;
+    left:50%;
+    transform:translate(-50%,-50%);
+    width:min(430px,calc(100% - 30px));
+    max-height:min(82vh,680px);
+    overflow-y:auto;
+    padding:26px;
+    border:1px solid #e8e8e8;
+    border-radius:26px;
+    background:var(--white);
+    color:var(--black);
+    box-shadow:0 28px 80px rgba(0,0,0,.38);
+    display:none;
+    z-index:800;
+    touch-action:pan-y;
+}
+
+.popup h2{
+    margin-bottom:20px;
+    font-size:1.65rem;
+    text-align:left;
+}
+
+.grid{
+    display:grid;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:13px;
+}
+
+.item{
+    min-height:145px;
+    padding:14px;
+    border:2px solid #ededed;
+    border-radius:18px;
+    background:#fafafa;
+    text-align:center;
+    font-size:15px;
+    font-weight:800;
+    transition:.2s ease;
+}
+
+.item:hover{
+    border-color:var(--pink-dark);
+    background:#fff8fa;
+    transform:translateY(-2px);
+}
+
+.item img{
+    width:100%;
+    max-width:105px;
+    height:92px;
+    object-fit:contain;
+}
+
+#leaderList{
+    max-height:310px;
+    overflow-y:auto;
+    padding:4px;
+    line-height:1.9;
+    color:#444;
+    touch-action:pan-y;
+}
+
+#closeLeader{
+    width:100%;
+    min-height:48px;
+    margin-top:18px;
+    border:none;
+    border-radius:15px;
+    background:var(--black);
+    color:var(--white);
+    font-size:15px;
+    font-weight:900;
+}
+
+/* MOBILE */
+
+@media(max-width:700px){
+    .back-btn{
+        top:max(10px,env(safe-area-inset-top));
+        left:10px;
+        min-height:42px;
+        padding:0 14px;
+        font-size:13px;
+    }
+
+    #topbar{
+        top:max(62px,calc(env(safe-area-inset-top) + 54px));
+        width:calc(100% - 20px);
+    }
+
+    .panel{
+        gap:7px;
+    }
+
+    .box{
+        min-height:52px;
+        padding:7px 6px;
+        border-radius:14px;
+        font-size:9px;
+        letter-spacing:.8px;
+    }
+
+    .box span{
+        font-size:17px;
+    }
+
+    #buttons{
+        top:max(10px,env(safe-area-inset-top));
+        right:10px;
+    }
+
+    #buttons button{
+        width:42px;
+        height:42px;
+        font-size:17px;
+    }
+
+    #player{
+        left:22px;
+        bottom:34px;
+        width:94px;
+    }
+
+    #obs,
+    #obs2{
+        bottom:34px;
+        width:78px;
+    }
+
+    #startMenu,
+    #msg{
+        padding:16px;
+    }
+
+    #startMenu::before,
+    #msg::before{
+        width:calc(100% - 28px);
+        height:calc(100% - 28px);
+        max-height:660px;
+        border-radius:24px;
+    }
+
+    #startMenu h1{
+        font-size:clamp(2rem,11vw,3rem);
+    }
+
+    #playerName,
+    #startMenu button,
+    #restartBtn,
+    #closeMsg{
+        width:min(330px,84vw);
+        min-height:48px;
+    }
+
+    .popup{
+        width:calc(100% - 24px);
+        max-height:78dvh;
+        padding:20px;
+        border-radius:22px;
+    }
+}
+
+@media(max-width:430px){
+    #startMenu::before,
+    #msg::before{
+        height:calc(100% - 18px);
+    }
+
+    #startMenu h1{
+        font-size:2.2rem;
+    }
+
+    #playerName{
+        margin-top:17px;
+    }
+
+    #startMenu button{
+        margin-top:9px;
+    }
+
+    #startMenu #startBtn{
+        margin-top:14px;
+    }
+
+    .grid{
+        gap:9px;
+    }
+
+    .item{
+        min-height:125px;
+        padding:10px;
+        font-size:13px;
+    }
+
+    .item img{
+        height:74px;
+    }
+}
+
+@media(max-height:680px) and (max-width:700px){
+    #startMenu{
+        justify-content:flex-start;
+        padding-top:70px;
+        overflow-y:auto;
+        touch-action:pan-y;
+    }
+
+    #startMenu::before{
+        top:10px;
+        height:auto;
+        min-height:610px;
+    }
+
+    #startMenu h1{
+        font-size:2rem;
+    }
+
+    #playerName{
+        min-height:44px;
+        margin-top:14px;
+    }
+
+    #startMenu button{
+        min-height:43px;
+    }
+}
+
+@media(orientation:landscape) and (max-height:520px){
+    #startMenu{
+        align-items:flex-start;
+        justify-content:flex-start;
+        padding:22px 20px 20px;
+        overflow-y:auto;
+        text-align:left;
+        touch-action:pan-y;
+    }
+
+    #startMenu::before{
+        width:calc(100% - 24px);
+        height:auto;
+        min-height:450px;
+        left:12px;
+        top:12px;
+    }
+
+    #startMenu h1{
+        margin-left:18px;
+        font-size:2rem;
+    }
+
+    #startMenu h1::after{
+        margin:12px 0 0;
+    }
+
+    #playerName,
+    #startMenu button{
+        width:min(360px,58vw);
+        margin-left:18px;
+    }
+
+    #topbar{
+        top:12px;
+        width:min(520px,calc(100% - 210px));
+    }
+
+    #player{
+        width:78px;
+    }
+
+    #obs,
+    #obs2{
+        width:66px;
+    }
+}
+</style>
+
+
+</head>
+
+
+<body>
+
+
+<div id="game">
+
+<button class="back-btn" onclick="window.location.href='../projects.html'">
+    ← Back
+</button>
+
+
+<!-- SCORE -->
+<div id="startMenu">
+
+
+<h1>DINO RUNNER</h1>
+
+<input id="playerName" maxlength="15" placeholder="Enter your name" required>
+
+<button id="startBtn">
+START GAME
+</button>
+
+<button id="startSkinBtn">
+CHOOSE SKIN
+</button>
+
+<button id="startBgBtn">
+BACKGROUND
+</button>
+
+<button id="leaderBtn">
+LEADERBOARD
+</button>
+
+</div>
+
+<div id="topbar">
+
+<div class="panel">
+
+
+<div class="box">
+BEST <span id="highScore">0</span>
+</div>
+
+
+<div class="box">
+SCORE <span id="score">0</span>
+</div>
+
+
+<div class="box">
+COINS <span id="coins">0</span>
+</div>
+
+
+</div>
+
+</div>
+
+<!-- BUTTONS -->
+
+<div id="buttons">
+
+<button id="pauseBtn" aria-label="Pause game">II</button>
+
+</div>
+
+<!-- GAME OBJECTS -->
+
+<img id="player" src="ha.png">
+
+<img id="obs" src="hy.png" alt="Obstacle">
+<img id="obs2" src="hy.png" alt="Second obstacle">
+
+<!-- GAME OVER -->
+
+<div id="msg">
+
+<div id="gameOverText">GAME OVER</div>
+
+<div id="newRecord" style="display:none;">
+NEW HIGH SCORE
+</div>
+
+<button id="restartBtn">
+PLAY AGAIN
+</button>
+
+
+<button id="closeMsg">
+MAIN MENU
+</button>
+
+</div>
+
+<!-- SKIN MENU -->
+
+
+<div id="skinMenu" class="popup">
+
+
+<h2>CHOOSE SKINS</h2>
+
+<div class="grid">
+
+
+<div class="item" data-skin="ha.png">
+
+<img src="ha.png">
+
+<p>Default</p>
+
+</div>
+
+
+
+<div class="item" data-skin="haerin.png">
+
+<img src="haerin.png">
+
+<p>Skin 2</p>
+
+</div>
+
+
+
+<div class="item" data-skin="minji.png">
+
+<img src="minji.png">
+
+<p>Skin 3</p>
+
+</div>
+
+
+
+<div class="item" data-skin="danielle.png">
+
+<img src="danielle.png">
+
+<p>Skin 4</p>
+
+</div>
+
+<div class="item" data-skin="hyein.png">
+
+<img src="hyein.png">
+
+<p>Skin 4</p>
+
+</div>
+
+
+</div>
+
+
+</div>
+
+
+
+
+
+<!-- BACKGROUND MENU -->
+
+
+<div id="bgMenu" class="popup">
+
+<h2>BACKGROUNDS</h2>
+
+<div class="grid">
+
+
+<div class="item" data-bg="bg.jpg">
+
+Sunny
+
+</div>
+
+
+
+<div class="item" data-bg="bg2.jpg">
+
+Snow
+
+</div>
+
+
+</div>
+
+</div>
+
+<!-- LEADERBOARD MENU -->
+
+<div id="leaderMenu" class="popup">
+
+<h2>LEADERBOARD</h2>
+
+
+<div id="leaderList">
+
+Loading...
+
+</div>
+
+
+<button id="closeLeader">
+CLOSE
+</button>
+
+</div>
+
+
+
+
+
+<audio id="jumpSound" src="audio.mp3" preload="auto"></audio>
+
+
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js";
+import {
+    getDatabase,
+    ref,
+    push,
+    onValue
+} from "https://www.gstatic.com/firebasejs/11.0.2/firebase-database.js";
+
+const firebaseConfig = {
+    apiKey: "AIzaSyC2NVy5uCfbBMXE0KfzHRnFPAzlNTB6hUE",
+    authDomain: "dweu-jumpii.firebaseapp.com",
+    databaseURL: "https://dweu-jumpii-default-rtdb.asia-southeast1.firebasedatabase.app",
+    projectId: "dweu-jumpii",
+    storageBucket: "dweu-jumpii.firebasestorage.app",
+    messagingSenderId: "166188949350",
+    appId: "1:166188949350:web:a3bf3bf442faa68d6032a7"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+
+// ======================================
+// ELEMENTS
+// ======================================
+
+const player = document.getElementById("player");
+const obs = document.getElementById("obs");
+const obs2 = document.getElementById("obs2");
+
+const scoreText = document.getElementById("score");
+const highText = document.getElementById("highScore");
+const coinText = document.getElementById("coins");
+
+const startMenu = document.getElementById("startMenu");
+const message = document.getElementById("msg");
+const newRecord = document.getElementById("newRecord");
+
+const playerNameInput = document.getElementById("playerName");
+const startBtn = document.getElementById("startBtn");
+const restartBtn = document.getElementById("restartBtn");
+const closeMsg = document.getElementById("closeMsg");
+const pauseBtn = document.getElementById("pauseBtn");
+
+const skinMenu = document.getElementById("skinMenu");
+const bgMenu = document.getElementById("bgMenu");
+const leaderMenu = document.getElementById("leaderMenu");
+const leaderList = document.getElementById("leaderList");
+
+const jumpSound = document.getElementById("jumpSound");
+
+// ======================================
+// GAME STATE
+// ======================================
+
+let score = 0;
+let highScore = Number(localStorage.getItem("highScore")) || 0;
+let coins = Number(localStorage.getItem("coins")) || 0;
+
+let jumping = false;
+let gameRunning = false;
+let started = false;
+let paused = false;
+
+let obstacleX = window.innerWidth;
+let secondObstacleOffset = 0;
+let obstaclePattern = "single";
+let speed = 9;
+let animationStarted = false;
+let scoreInterval = null;
+
+highText.textContent = highScore;
+coinText.textContent = coins;
+
+// ======================================
+// LOAD SAVED SETTINGS
+// ======================================
+
+const savedSkin = localStorage.getItem("skin");
+if (savedSkin) {
+    player.src = savedSkin;
+}
+
+const savedBg = localStorage.getItem("background");
+setBackground(savedBg || "bg.jpg");
+
+const savedName = localStorage.getItem("playerName");
+if (savedName) {
+    playerNameInput.value = savedName;
+}
+
+playerNameInput.addEventListener("input", () => {
+    localStorage.setItem("playerName", playerNameInput.value);
+});
+
+function setBackground(fileName) {
+    document.body.style.background =
+        `url("${fileName}") center/cover no-repeat`;
+}
+
+// ======================================
+// SCORE
+// ======================================
+
+function startScoreTimer() {
+    clearInterval(scoreInterval);
+
+    scoreInterval = setInterval(() => {
+        if (!started || !gameRunning || paused) return;
+
+        score += 1;
+
+        if (score > 0 && score % 100 === 0 && speed < 20) {
+            speed += 0.5;
+        }
+
+        scoreText.textContent = score;
+
+        if (score > highScore) {
+            highScore = score;
+            highText.textContent = highScore;
+            localStorage.setItem("highScore", String(highScore));
+        }
+    }, 500);
+}
+
+// ======================================
+// JUMP
+// ======================================
+
+function jump() {
+    if (jumping || !gameRunning || paused) return;
+
+    jumping = true;
+
+    jumpSound.currentTime = 0;
+    jumpSound.play().catch(() => {});
+
+    let height = 0;
+
+    const up = setInterval(() => {
+        if (!gameRunning) {
+            clearInterval(up);
+            jumping = false;
+            return;
+        }
+
+        if (paused) return;
+
+        height += 8;
+        player.style.bottom = `${40 + height}px`;
+
+        if (height >= 220) {
+            clearInterval(up);
+
+            const down = setInterval(() => {
+                if (!gameRunning) {
+                    clearInterval(down);
+                    player.style.bottom = "40px";
+                    jumping = false;
+                    return;
+                }
+
+                if (paused) return;
+
+                height -= 8;
+                player.style.bottom = `${40 + height}px`;
+
+                if (height <= 0) {
+                    clearInterval(down);
+                    player.style.bottom = "40px";
+                    jumping = false;
+                }
+            }, 20);
+        }
+    }, 20);
+}
+
+document.addEventListener("touchstart", event => {
+    if (!event.target.closest("button, input, .popup")) {
+        event.preventDefault();
+        jump();
+    }
+}, { passive: false });
+
+document.addEventListener("mousedown", event => {
+    if (!event.target.closest("button, input, .popup")) {
+        jump();
+    }
+});
+
+document.addEventListener("keydown", event => {
+    if (event.code === "Space" || event.code === "ArrowUp") {
+        event.preventDefault();
+        jump();
+    }
+});
+
+// ======================================
+// ONE RANDOMIZED OBSTACLE
+// ======================================
+
+function setRandomObstacle() {
+    obs.src = "hy.png";
+    obs2.src = "hy.png";
+
+    // Random interval before the next obstacle group.
+    const minGap = Math.max(320, window.innerWidth * 0.28);
+    const maxGap = Math.max(850, window.innerWidth * 0.80);
+    const randomGap = minGap + Math.random() * (maxGap - minGap);
+
+    obstacleX = window.innerWidth + randomGap;
+
+    // Randomly choose a pattern. This is NOT based on score.
+    const chance = Math.random();
+
+    if (chance < 0.70) {
+        // 70%: one obstacle
+        obstaclePattern = "single";
+        secondObstacleOffset = 0;
+        obs2.style.display = "none";
+    } else if (chance < 0.90) {
+        // 20%: two close obstacles
+        obstaclePattern = "close";
+        secondObstacleOffset = 105 + Math.random() * 40;
+        obs2.style.display = "block";
+    } else {
+        // 10%: two far obstacles
+        obstaclePattern = "far";
+        secondObstacleOffset = 230 + Math.random() * 100;
+        obs2.style.display = "block";
+    }
+
+    // Random size for each cactus.
+    const mobile = window.innerWidth <= 700;
+    const minWidth = mobile ? 68 : 82;
+    const maxWidth = mobile ? 100 : 125;
+
+    const firstWidth = minWidth + Math.random() * (maxWidth - minWidth);
+    const secondWidth = minWidth + Math.random() * (maxWidth - minWidth);
+
+    obs.style.width = `${Math.round(firstWidth)}px`;
+    obs2.style.width = `${Math.round(secondWidth)}px`;
+
+    obs.style.bottom = "40px";
+    obs2.style.bottom = "40px";
+
+    obs.style.left = `${obstacleX}px`;
+    obs2.style.left = `${obstacleX + secondObstacleOffset}px`;
+}
+
+// ======================================
+// OBSTACLE MOVEMENT
+// ======================================
+
+function moveObstacle() {
+    if (!animationStarted) return;
+
+    if (gameRunning && !paused) {
+        obstacleX -= speed;
+
+        obs.style.left = `${obstacleX}px`;
+
+        if (obstaclePattern !== "single") {
+            obs2.style.left = `${obstacleX + secondObstacleOffset}px`;
+        }
+
+        const lastObstacleX =
+            obstaclePattern === "single"
+                ? obstacleX
+                : obstacleX + secondObstacleOffset;
+
+        if (lastObstacleX < -150) {
+            setRandomObstacle();
+
+            coins += 1;
+            coinText.textContent = coins;
+            localStorage.setItem("coins", String(coins));
+        }
+
+        checkCollision();
+    }
+
+    requestAnimationFrame(moveObstacle);
+}
+
+function startAnimationLoop() {
+    if (animationStarted) return;
+    animationStarted = true;
+    requestAnimationFrame(moveObstacle);
+}
+
+// ======================================
+// COLLISION
+// ======================================
+
+function rectanglesOverlap(a, b) {
+    return (
+        a.left < b.right &&
+        a.right > b.left &&
+        a.bottom > b.top &&
+        a.top < b.bottom
+    );
+}
+
+function getObstacleBox(element) {
+    const rect = element.getBoundingClientRect();
+
+    return {
+        left: rect.left + 15,
+        right: rect.right - 15,
+        top: rect.top + 15,
+        bottom: rect.bottom - 5
+    };
+}
+
+function checkCollision() {
+    const p = player.getBoundingClientRect();
+
+    const playerBox = {
+        left: p.left + 25,
+        right: p.right - 25,
+        top: p.top + 20,
+        bottom: p.bottom - 10
+    };
+
+    const hitFirst = rectanglesOverlap(
+        playerBox,
+        getObstacleBox(obs)
+    );
+
+    let hitSecond = false;
+
+    if (obstaclePattern !== "single" && obs2.style.display !== "none") {
+        hitSecond = rectanglesOverlap(
+            playerBox,
+            getObstacleBox(obs2)
+        );
+    }
+
+    if (hitFirst || hitSecond) {
+        gameOver();
+    }
+}
+
+// ======================================
+// FIREBASE
+// ======================================
+
+function saveScore() {
+    const name = playerNameInput.value.trim() || "Anonymous";
+
+    push(ref(db, "leaderboard"), {
+        name,
+        score,
+        date: Date.now()
+    }).catch(error => {
+        console.error("Could not save score:", error);
+    });
+}
+
+function loadLeaderboard() {
+    leaderList.textContent = "Loading...";
+
+    onValue(
+        ref(db, "leaderboard"),
+        snapshot => {
+            const players = [];
+
+            snapshot.forEach(child => {
+                players.push(child.val());
+            });
+
+            players.sort((a, b) => Number(b.score) - Number(a.score));
+
+            leaderList.innerHTML = "";
+
+            if (players.length === 0) {
+                leaderList.textContent = "No scores yet.";
+                return;
+            }
+
+            players.slice(0, 10).forEach((entry, index) => {
+                const row = document.createElement("p");
+                row.textContent =
+                    `${index + 1}. ${entry.name || "Anonymous"} — ${Number(entry.score) || 0}`;
+                leaderList.appendChild(row);
+            });
+        },
+        error => {
+            console.error("Could not load leaderboard:", error);
+            leaderList.textContent = "Unable to load leaderboard.";
+        },
+        { onlyOnce: true }
+    );
+}
+
+// ======================================
+// GAME OVER
+// ======================================
+
+function gameOver() {
+    if (!gameRunning) return;
+
+    gameRunning = false;
+    paused = false;
+    pauseBtn.textContent = "II";
+
+    const isNewRecord = score > 0 && score >= highScore;
+    newRecord.style.display = isNewRecord ? "block" : "none";
+
+    message.style.display = "flex";
+    saveScore();
+}
+
+// ======================================
+// START / RESTART / MENU
+// ======================================
+
+function resetRound() {
+    score = 0;
+    speed = 9;
+    paused = false;
+    jumping = false;
+
+    scoreText.textContent = "0";
+    pauseBtn.textContent = "II";
+
+    setRandomObstacle();
+    obs.style.left = `${obstacleX}px`;
+    obs2.style.left = `${obstacleX + secondObstacleOffset}px`;
+    player.style.bottom = "40px";
+
+    newRecord.style.display = "none";
+}
+
+function beginGame() {
+    const name = playerNameInput.value.trim();
+
+    if (!name) {
+        alert("Please enter your name first.");
+        return;
+    }
+
+    localStorage.setItem("playerName", name);
+
+    resetRound();
+
+    started = true;
+    gameRunning = true;
+
+    startMenu.style.display = "none";
+    message.style.display = "none";
+
+    startScoreTimer();
+    startAnimationLoop();
+}
+
+startBtn.addEventListener("click", event => {
+    event.stopPropagation();
+    beginGame();
+});
+
+restartBtn.addEventListener("click", event => {
+    event.stopPropagation();
+    beginGame();
+});
+
+closeMsg.addEventListener("click", event => {
+    event.stopPropagation();
+
+    gameRunning = false;
+    started = false;
+    clearInterval(scoreInterval);
+
+    resetRound();
+
+    message.style.display = "none";
+    startMenu.style.display = "flex";
+
+    const background = localStorage.getItem("background") || "bg.jpg";
+    setBackground(background);
+});
+
+// ======================================
+// PAUSE
+// ======================================
+
+pauseBtn.addEventListener("click", event => {
+    event.stopPropagation();
+
+    if (!gameRunning) return;
+
+    paused = !paused;
+    pauseBtn.textContent = paused ? "▶" : "II";
+});
+
+// ======================================
+// POPUPS
+// ======================================
+
+function closeAllPopups() {
+    document.querySelectorAll(".popup").forEach(popup => {
+        popup.style.display = "none";
+    });
+}
+
+document.getElementById("startSkinBtn").addEventListener("click", event => {
+    event.stopPropagation();
+    closeAllPopups();
+    skinMenu.style.display = "block";
+});
+
+document.getElementById("startBgBtn").addEventListener("click", event => {
+    event.stopPropagation();
+    closeAllPopups();
+    bgMenu.style.display = "block";
+});
+
+document.getElementById("leaderBtn").addEventListener("click", event => {
+    event.stopPropagation();
+    closeAllPopups();
+    leaderMenu.style.display = "block";
+    loadLeaderboard();
+});
+
+document.getElementById("closeLeader").addEventListener("click", event => {
+    event.stopPropagation();
+    leaderMenu.style.display = "none";
+});
+
+document.addEventListener("click", event => {
+    if (
+        !event.target.closest(".popup") &&
+        !event.target.closest("#startSkinBtn") &&
+        !event.target.closest("#startBgBtn") &&
+        !event.target.closest("#leaderBtn")
+    ) {
+        closeAllPopups();
+    }
+});
+
+// ======================================
+// SKINS AND BACKGROUNDS
+// ======================================
+
+document.querySelectorAll("#skinMenu .item").forEach(item => {
+    item.addEventListener("click", event => {
+        event.stopPropagation();
+
+        const skin = item.dataset.skin;
+        player.src = skin;
+        localStorage.setItem("skin", skin);
+        skinMenu.style.display = "none";
+    });
+});
+
+document.querySelectorAll("#bgMenu .item").forEach(item => {
+    item.addEventListener("click", event => {
+        event.stopPropagation();
+
+        const background = item.dataset.bg;
+        setBackground(background);
+        localStorage.setItem("background", background);
+        bgMenu.style.display = "none";
+    });
+});
+
+// Keep the obstacle correctly positioned after rotation or resize.
+window.addEventListener("resize", () => {
+    if (!gameRunning) {
+        setRandomObstacle();
+        obs.style.left = `${obstacleX}px`;
+        obs2.style.left = `${obstacleX + secondObstacleOffset}px`;
+    }
+});
+</script>
+
+</div>
+</body>
+</html>
