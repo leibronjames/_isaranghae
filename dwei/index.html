@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en" class="drei-nav-preload">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#111111">
+  <title>DREI • Design • Research • Explore • Innovate</title>
+
+  <link rel="stylesheet" href="css/main.css?v=9.0">
+  <link rel="stylesheet" href="css/sidebar.css?v=9.0">
+  <link rel="stylesheet" href="css/intro.css?v=9.0">
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js" defer></script>
+  <script src="js/main.js?v=9.0" defer></script>
+  <script src="js/sidebar.js?v=9.0" defer></script>
+  <script src="js/intro.js?v=9.0" defer></script>
+
+<style id="drei-critical-mobile-nav">
+@media(max-width:760px){
+  html.drei-nav-preload .sidebar,
+  html:not(.drei-nav-ready) .sidebar{
+    transform:translate3d(-130%,0,0)!important;
+    visibility:hidden!important;
+    pointer-events:none!important;
+    box-shadow:none!important;
+    transition:none!important;
+  }
+}
+</style>
+</head>
+<body>
+
+<section class="intro" id="intro" aria-label="DREI interactive lamp introduction">
+  <button class="skip-intro" id="skipIntro" type="button">Skip intro</button>
+
+  <div class="intro-texture" aria-hidden="true"></div>
+  <div class="intro-vignette" aria-hidden="true"></div>
+  <div class="intro-outline" aria-hidden="true">DREI</div>
+  <div class="floor-glow" aria-hidden="true"></div>
+  <div class="dust-particles" id="dustParticles" aria-hidden="true"></div>
+  <div class="spotlight" id="spotlight" aria-hidden="true"></div>
+  <div class="spotlight-core" id="spotlightCore" aria-hidden="true"></div>
+
+  <div class="lamp" id="lamp" aria-hidden="true">
+    <div class="main-wire"></div>
+    <div class="lamp-shade"><span class="lamp-logo">DREI</span></div>
+    <div class="bulb-holder"></div>
+    <div class="bulb" id="bulb"></div>
+  </div>
+
+  <div class="pull-cord" id="pullCord" role="button" tabindex="0" aria-label="Pull the cord to turn on the lamp">
+    <div class="cord-line" id="cordLine"></div>
+    <div class="cord-handle" id="cordHandle"><span>↓</span></div>
+  </div>
+
+  <div class="pull-text" id="pullText">
+    <span class="intro-kicker">INTERACTIVE INTRO</span>
+    <h1>Pull the cord</h1>
+    <p>Turn on the light and reveal the DREI portfolio.</p>
+  </div>
+
+  <div class="welcome" id="welcome">
+    <span class="welcome-kicker">WELCOME TO</span>
+    <h2 class="intro-brand">DREI</h2>
+    <div class="brand-meaning" aria-label="Design Research Explore Innovate">
+      <span class="meaning-word"><b>D</b> Design</span>
+      <span class="meaning-word"><b>R</b> Research</span>
+      <span class="meaning-word"><b>E</b> Explore</span>
+      <span class="meaning-word"><b>I</b> Innovate</span>
+    </div>
+    <p class="intro-tagline">Creating modern websites, interactive games, and digital experiences.</p>
+    <button class="enter-btn" id="enterBtn" type="button">Enter Portfolio <span>→</span></button>
+  </div>
+</section>
+
+<div class="page-shell home-dashboard" id="dashboard">
+  <button class="mobile-menu" id="mobileMenu" type="button" aria-label="Open navigation menu" aria-expanded="false">☰</button>
+
+  <div class="wrapper">
+    <aside class="sidebar" id="sidebar" aria-label="Main navigation">
+      <div class="sidebar-top">
+        <div class="logo">DR<span>EI</span></div>
+        <button class="collapse-btn" id="collapseBtn" type="button" aria-label="Collapse sidebar">❮</button>
+      </div>
+
+      <nav class="nav">
+        <a class="active" href="index.html" data-label="Home"><span class="nav-icon" aria-hidden="true">⌂</span><span class="nav-label">Home</span></a>
+        <a href="projects/projects.html" data-label="Projects"><span class="nav-icon" aria-hidden="true">▣</span><span class="nav-label">Projects</span></a>
+        <a href="about/about.html" data-label="About"><span class="nav-icon" aria-hidden="true">●</span><span class="nav-label">About</span></a>
+        <a href="games/games.html" data-label="Games"><span class="nav-icon" aria-hidden="true">✦</span><span class="nav-label">Games</span></a>
+        <a href="interest/interests.html" data-label="Interests"><span class="nav-icon" aria-hidden="true">♥</span><span class="nav-label">Interests</span></a>
+        <a href="social/social.html" data-label="Social"><span class="nav-icon" aria-hidden="true">◎</span><span class="nav-label">Social</span></a>
+      </nav>
+
+      <div class="sidebar-footer">© 2026 DREI Portfolio</div>
+    </aside>
+
+    <main class="main">
+      <section class="page-hero">
+        <div class="hero-content">
+          <span class="hero-badge">DESIGN • RESEARCH • EXPLORE • INNOVATE</span>
+          <h1>DREI</h1>
+          <p>Creating responsive websites, browser games, and interactive digital experiences through creativity and continuous learning.</p>
+          <div class="hero-meta">
+            <span class="hero-chip" id="liveDate">Loading date...</span>
+            <span class="hero-chip" id="liveTime">Loading time...</span>
+            <span class="hero-chip">Currently working on: Portfolio Dashboard</span>
+            <button class="hero-chip replay-intro" id="replayIntro" type="button">Replay intro</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="section reveal">
+        <h2 class="section-title">Portfolio analytics</h2>
+        <p class="section-sub">A quick view of what I have built and what I am currently studying.</p>
+        <div class="dashboard-grid">
+          <article class="dashboard-panel">
+            <h3>Projects by category</h3>
+            <p class="panel-description">The number of completed projects in each category.</p>
+            <div class="chart-wrap"><canvas id="projectChart"></canvas></div>
+          </article>
+
+          <article class="dashboard-panel">
+            <h3>Current skill focus</h3>
+            <p class="panel-description">How I divide my learning time across my main skills.</p>
+            <div class="chart-wrap"><canvas id="skillChart"></canvas></div>
+          </article>
+        </div>
+      </section>
+
+      <section class="section reveal">
+        <article class="dashboard-panel">
+          <h3>Current goals</h3>
+          <p class="panel-description">The skills and technologies I am actively working toward.</p>
+          <div class="goal-list">
+            <div class="goal">
+              <div class="goal-head"><span>Improve JavaScript</span><span>70%</span></div>
+              <div class="goal-track"><div class="goal-fill" data-width="70%"></div></div>
+            </div>
+            <div class="goal">
+              <div class="goal-head"><span>Learn APIs</span><span>40%</span></div>
+              <div class="goal-track"><div class="goal-fill" data-width="40%"></div></div>
+            </div>
+            <div class="goal">
+              <div class="goal-head"><span>Build a full-stack website</span><span>20%</span></div>
+              <div class="goal-track"><div class="goal-fill" data-width="20%"></div></div>
+            </div>
+            <div class="goal">
+              <div class="goal-head"><span>Learn React</span><span>10%</span></div>
+              <div class="goal-track"><div class="goal-fill" data-width="10%"></div></div>
+            </div>
+          </div>
+        </article>
+      </section>
+
+      <section class="section reveal">
+        <article class="bible-card">
+          <span class="bible-label">Daily Bible verse</span>
+          <p class="bible-text" id="dailyVerse">Loading today's verse...</p>
+          <p class="bible-reference" id="verseReference"></p>
+        </article>
+      </section>
+
+      <section class="section reveal">
+        <h2 class="section-title">Featured project</h2>
+        <div class="featured-project">
+          <article class="featured-copy">
+            <h3>Memory Card Game</h3>
+            <p>A responsive browser game made with HTML, CSS and JavaScript. Players match card pairs while tracking their moves and completion time.</p>
+            <a class="primary-btn" href="projects/projects.html">View project</a>
+          </article>
+          <div class="featured-visual">
+            <div class="featured-title">Memory Card Game</div>
+          </div>
+        </div>
+      </section>
+
+      <div class="footer-note">© 2026 DREI Portfolio</div>
+    </main>
+  </div>
+</div>
+
+</body>
+</html>

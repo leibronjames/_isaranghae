@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+
+<html lang="en" class="drei-nav-preload"><head><meta charset="utf-8"/><meta content="width=device-width,initial-scale=1.0" name="viewport"/>
+<title>Projects - DWEI</title><style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--black:#111;--white:#fff;--pink:#f6d6de;--pink2:#ecb7c5;--gray:#6b6b6b;--line:#ececec}
+html{scroll-behavior:smooth}
+body{font-family:Arial,Helvetica,sans-serif;background:var(--white);color:var(--black);min-height:100vh}
+body.page-enter .sidebar{animation:sideIn .55s ease both}
+body.page-enter .page-hero{animation:heroIn .65s .08s ease both}
+body.page-enter .reveal{opacity:0;transform:translateY(24px);animation:itemIn .65s ease forwards}
+body.page-enter .reveal:nth-of-type(1){animation-delay:.18s}
+body.page-enter .reveal:nth-of-type(2){animation-delay:.28s}
+body.page-enter .reveal:nth-of-type(3){animation-delay:.38s}
+body.page-enter .reveal:nth-of-type(4){animation-delay:.48s}
+body.page-leave .page-shell{opacity:0;transform:translateY(-18px)}
+@keyframes sideIn{from{opacity:0;transform:translateX(-18px)}to{opacity:1;transform:none}}
+@keyframes heroIn{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:none}}
+@keyframes itemIn{to{opacity:1;transform:none}}
+.page-shell{min-height:100vh;transition:opacity .42s ease,transform .42s ease}
+.wrapper{display:flex;min-height:100vh}
+.sidebar{width:240px;background:var(--black);color:var(--white);padding:28px 18px;display:flex;flex-direction:column;position:fixed;inset:0 auto 0 0;z-index:50}
+.logo{font-size:1.8rem;font-weight:900;letter-spacing:3px;padding:10px 15px 30px}.logo span{color:var(--pink)}
+.nav{display:flex;flex-direction:column;gap:10px}
+.nav a{display:flex;align-items:center;gap:12px;color:var(--white);text-decoration:none;padding:14px 16px;border-radius:12px;transition:.3s}
+.nav a:hover,.nav a.active{background:var(--pink);color:var(--black);transform:translateX(4px)}
+.sidebar-footer{margin-top:auto;color:#aaa;font-size:.85rem;padding:15px}
+.mobile-menu{display:none;position:fixed;top:15px;left:15px;z-index:100;width:45px;height:45px;border:none;border-radius:12px;background:var(--black);color:var(--white);font-size:1.3rem;cursor:pointer}
+.main{flex:1;margin-left:240px;padding:35px;min-width:0}
+.page-hero{min-height:300px;background:var(--black);color:var(--white);border-radius:28px;padding:52px;display:flex;align-items:center;position:relative;overflow:hidden;box-shadow:0 20px 50px rgba(0,0,0,.14)}
+.page-hero:before{content:"";position:absolute;width:340px;height:340px;border-radius:50%;background:var(--pink);right:-90px;top:-155px}
+.page-hero:after{content:"";position:absolute;width:190px;height:190px;border:24px solid var(--pink);border-radius:50%;right:130px;bottom:-145px}
+.hero-content{position:relative;z-index:2;max-width:720px}
+.hero-badge{display:inline-block;background:var(--pink);color:var(--black);padding:8px 14px;border-radius:999px;font-weight:bold;margin-bottom:18px}
+.page-hero h1{font-size:clamp(2.5rem,5vw,4.7rem);line-height:1.05;margin-bottom:18px}
+.page-hero p{max-width:620px;color:#ddd;line-height:1.7;font-size:1.02rem}
+.section{margin-top:42px}.section-title{font-size:1.9rem;margin-bottom:20px}.section-sub{color:var(--gray);margin-top:-10px;margin-bottom:22px}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:24px}
+.grid.three{grid-template-columns:repeat(3,minmax(0,1fr))}
+.card{background:var(--white);border:1px solid var(--line);border-radius:24px;overflow:hidden;color:var(--black);box-shadow:0 10px 30px rgba(0,0,0,.06);transition:.35s}
+.card:hover{transform:translateY(-8px);border-color:var(--pink2);box-shadow:0 20px 45px rgba(0,0,0,.13)}
+.card-body{padding:24px}.card h3{margin-bottom:10px}.card p{color:var(--gray);line-height:1.65}
+.media{height:220px;background:var(--black);position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center}
+.media img{width:100%;height:100%;object-fit:cover;display:block;transition:.4s}
+.card:hover .media img{transform:scale(1.05)}
+.media.placeholder:before{content:"";position:absolute;width:190px;height:190px;background:var(--pink);border-radius:50%;right:-55px;top:-75px}
+.media.placeholder:after{content:"";position:absolute;width:130px;height:130px;border:20px solid var(--pink);border-radius:50%;left:-60px;bottom:-70px;opacity:.75}
+.number{position:relative;z-index:2;width:92px;height:92px;border-radius:24px;background:var(--white);display:grid;place-items:center;font-size:2.2rem;font-weight:900;box-shadow:0 15px 30px rgba(0,0,0,.2)}
+.tags{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px}.tag{padding:7px 11px;border-radius:999px;background:var(--pink);font-size:.78rem;font-weight:bold}
+.link-card{text-decoration:none}
+.panel{background:var(--pink);border-radius:24px;padding:28px}
+.info-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.info-box{background:#fff;border-radius:18px;padding:20px;border:1px solid rgba(0,0,0,.06)}
+.timeline{display:grid;gap:15px}.timeline-item{background:#fff;border-left:5px solid var(--pink2);border-radius:18px;padding:20px;box-shadow:0 8px 22px rgba(0,0,0,.05)}
+.skills{display:flex;flex-wrap:wrap;gap:10px}.skill{background:var(--black);color:#fff;padding:10px 14px;border-radius:999px}
+.social-card{position:relative;min-height:340px;text-decoration:none;color:#fff}
+.social-card .media{height:340px}.overlay{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:flex-end;padding:24px;background:linear-gradient(to top,rgba(0,0,0,.9),rgba(0,0,0,.15),transparent)}
+.overlay h3{font-size:1.7rem;margin-bottom:6px}.overlay p{color:#eee}.visit{display:inline-block;margin-top:14px;background:#fff;color:#111;padding:10px 15px;border-radius:999px;width:max-content;font-weight:bold}
+.footer-note{text-align:center;color:#777;padding:30px 0}
+@media(max-width:1000px){.grid.three{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:760px){
+.mobile-menu{display:block}.sidebar{transform:translateX(-100%);transition:.35s}.sidebar.open{transform:translateX(0)}
+.main{margin-left:0;padding:78px 18px 28px}.page-hero{min-height:360px;padding:38px 25px}.page-hero:before{width:230px;height:230px;right:-100px;top:-100px}.page-hero:after{width:130px;height:130px;right:25px;bottom:-100px;border-width:18px}
+.grid,.grid.three,.info-grid{grid-template-columns:1fr}.media{height:200px}.social-card,.social-card .media{min-height:280px;height:280px}
+}
+
+
+/* ===== OPTION 4: COLLAPSIBLE DREI SIDEBAR ===== */
+:root{
+  --sidebar-wide:240px;
+  --sidebar-small:82px;
+}
+body{overflow-x:hidden;-webkit-text-size-adjust:100%}
+button,a{-webkit-tap-highlight-color:transparent}
+.sidebar{
+  width:var(--sidebar-wide);
+  padding:22px 16px;
+  box-shadow:12px 0 32px rgba(0,0,0,.13);
+  transition:width .32s ease,transform .32s ease;
+  overflow:visible;
+}
+.sidebar.collapsed{width:var(--sidebar-small)}
+.sidebar-top{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  min-height:52px;
+}
+.sidebar .logo{
+  padding:0;
+  overflow:hidden;
+  white-space:nowrap;
+  transition:width .25s ease,opacity .2s ease;
+}
+.sidebar.collapsed .logo{width:0;opacity:0}
+.collapse-btn{
+  flex:0 0 44px;
+  width:44px;
+  height:44px;
+  border:0;
+  border-radius:13px;
+  background:#242424;
+  color:#fff;
+  font-size:1.15rem;
+  cursor:pointer;
+  transition:background .25s,color .25s,transform .3s;
+}
+.collapse-btn:hover{background:var(--pink);color:#111}
+.sidebar.collapsed .collapse-btn{transform:rotate(180deg)}
+.sidebar .nav{margin-top:28px;gap:8px}
+.sidebar .nav a{
+  min-height:50px;
+  padding:0 14px;
+  gap:14px;
+  overflow:visible;
+  position:relative;
+}
+.sidebar .nav-icon{
+  flex:0 0 26px;
+  width:26px;
+  display:grid;
+  place-items:center;
+  font-size:1.15rem;
+}
+.sidebar .nav-label{
+  white-space:nowrap;
+  font-weight:700;
+  transition:opacity .2s,width .2s;
+}
+.sidebar.collapsed .nav-label{opacity:0;width:0;overflow:hidden}
+.sidebar.collapsed .nav a{justify-content:center;padding:0}
+.sidebar .nav a.active::before{
+  content:"";
+  position:absolute;
+  left:0;
+  top:10px;
+  bottom:10px;
+  width:4px;
+  border-radius:0 8px 8px 0;
+  background:#111;
+}
+.sidebar.collapsed .nav a::after{
+  content:attr(data-label);
+  position:absolute;
+  left:calc(100% + 12px);
+  top:50%;
+  transform:translate(-6px,-50%);
+  background:#111;
+  color:#fff;
+  padding:8px 11px;
+  border-radius:9px;
+  font-size:.82rem;
+  white-space:nowrap;
+  opacity:0;
+  visibility:hidden;
+  transition:.2s;
+  pointer-events:none;
+  box-shadow:0 8px 24px rgba(0,0,0,.2);
+  z-index:200;
+}
+.sidebar.collapsed .nav a:hover::after{
+  opacity:1;
+  visibility:visible;
+  transform:translate(0,-50%);
+}
+.sidebar-footer{
+  border-top:1px solid rgba(255,255,255,.12);
+  padding-top:16px;
+  white-space:nowrap;
+  overflow:hidden;
+  transition:opacity .2s;
+}
+.sidebar.collapsed .sidebar-footer{opacity:0}
+.main{
+  margin-left:var(--sidebar-wide);
+  transition:margin-left .32s ease;
+}
+.main.sidebar-expanded{margin-left:var(--sidebar-small)}
+.mobile-overlay{
+  position:fixed;
+  inset:0;
+  z-index:45;
+  background:rgba(0,0,0,.52);
+  backdrop-filter:blur(3px);
+  opacity:0;
+  visibility:hidden;
+  transition:.25s;
+}
+.mobile-overlay.show{opacity:1;visibility:visible}
+
+@media(hover:none){
+  .card:hover{transform:none}
+  .card:hover .media img{transform:none}
+  .nav a:hover{transform:none}
+}
+
+@media(max-width:760px){
+  .sidebar,.sidebar.collapsed{
+    width:min(82vw,300px);
+    transform:translateX(-105%);
+    padding:22px 16px;
+  }
+  .sidebar.open{transform:translateX(0)}
+  .sidebar.collapsed .logo{width:auto;opacity:1}
+  .sidebar.collapsed .nav-label{opacity:1;width:auto;overflow:visible}
+  .sidebar.collapsed .nav a{justify-content:flex-start;padding:0 14px}
+  .sidebar.collapsed .sidebar-footer{opacity:1}
+  .sidebar.collapsed .nav a::after{display:none}
+  .collapse-btn{display:none}
+  .main,.main.sidebar-expanded{
+    width:100%;
+    margin-left:0;
+    padding:76px 14px 26px;
+  }
+  .mobile-menu{
+    display:block;
+    top:max(14px,env(safe-area-inset-top));
+    left:14px;
+    width:48px;
+    height:48px;
+    border-radius:14px;
+    box-shadow:0 9px 24px rgba(0,0,0,.22);
+  }
+  .page-hero{
+    min-height:auto;
+    padding:34px 21px;
+    border-radius:22px;
+    align-items:flex-end;
+  }
+  .page-hero h1{
+    font-size:clamp(2rem,10vw,3rem);
+    line-height:1.08;
+  }
+  .page-hero p{font-size:.95rem;line-height:1.58}
+  .section{margin-top:30px}
+  .grid,.grid.three,.info-grid{grid-template-columns:1fr;gap:15px}
+  .card{border-radius:19px}
+  .card-body{padding:18px}
+  .media{height:auto;aspect-ratio:16/10}
+  .social-card,.social-card .media{height:auto;min-height:0;aspect-ratio:4/5}
+  .panel{padding:21px;border-radius:19px}
+}
+@media(max-width:390px){
+  .main{padding-left:10px;padding-right:10px}
+  .page-hero{padding:30px 18px}
+}
+
+</style><link rel="stylesheet" href="../assets/portfolio-interactions.css?v=9.0">
+<link rel="stylesheet" href="../assets/page-experience.css?v=11.0">
+
+<style id="drei-critical-mobile-nav">
+@media(max-width:760px){
+  html.drei-nav-preload .sidebar,
+  html:not(.drei-nav-ready) .sidebar{
+    transform:translate3d(-130%,0,0)!important;
+    visibility:hidden!important;
+    pointer-events:none!important;
+    box-shadow:none!important;
+    transition:none!important;
+  }
+}
+</style>
+</head>
+<body class="page-projects"><div class="page-shell"><button class="mobile-menu" id="mobileMenu">☰</button><div class="wrapper">
+<aside class="sidebar" id="sidebar"><div class="sidebar-top"><div class="logo">DR<span>EI</span></div><button class="collapse-btn" id="collapseBtn" type="button" aria-label="Collapse sidebar">❮</button></div><nav class="nav"><a data-page="" href="../index.html" data-label="Home"><span class="nav-icon" aria-hidden="true">⌂</span><span class="nav-label">Home</span></a><a class="active" data-page="" href="projects.html" data-label="Projects"><span class="nav-icon" aria-hidden="true">▣</span><span class="nav-label">Projects</span></a><a data-page="" href="../about/about.html" data-label="About"><span class="nav-icon" aria-hidden="true">●</span><span class="nav-label">About</span></a><a data-page="" href="../games/games.html" data-label="Games"><span class="nav-icon" aria-hidden="true">✦</span><span class="nav-label">Games</span></a><a data-page="" href="../interest/interests.html" data-label="Interests"><span class="nav-icon" aria-hidden="true">♥</span><span class="nav-label">Interests</span></a><a data-page="" href="../social/social.html" data-label="Social"><span class="nav-icon" aria-hidden="true">◎</span><span class="nav-label">Social</span></a></nav><div class="sidebar-footer">© 2026 DREI Portfolio</div></aside>
+<main class="main"><section class="page-hero"><div class="hero-content"><span class="hero-badge">MY WORK</span><h1>Projects built with creativity.</h1><p>Explore my browser games, interactive tools and web projects. Every project helped me improve my HTML, CSS and JavaScript skills.</p></div></section>
+<section class="section reveal"><h2 class="section-title">Featured projects</h2><p class="section-sub">Select a project to open it.</p>
+<div class="grid">
+  <a class="card link-card" href="music/index.html">
+    <div class="media placeholder">
+        <div class="number">01</div>
+    </div>
+
+    <div class="card-body">
+        <h3>DREI Music</h3>
+
+        <p>
+            Search songs, artists and albums using the Deezer API,
+            preview music, create favorites and enjoy a Spotify-inspired
+            interface.
+        </p>
+
+        <div class="tags">
+            <span class="tag">HTML</span>
+            <span class="tag">CSS</span>
+            <span class="tag">JavaScript</span>
+            <span class="tag">API</span>
+        </div>
+    </div>
+</a>
+<a class="card link-card" href="memorygame/mmrg.html"><div class="media placeholder"><div class="number">02</div></div><div class="card-body"><h3>Memory Game</h3><p>Match all card pairs before the timer runs out in this responsive memory challenge.</p><div class="tags"><span class="tag">HTML</span><span class="tag">CSS</span><span class="tag">JavaScript</span></div></div></a>
+<a class="card link-card" href="hanni/index.html"><div class="media placeholder"><div class="number">03</div></div><div class="card-body"><h3>Jumping Hanni</h3><p>An endless runner game with smooth jumping, obstacles and gradually increasing speed.</p><div class="tags"><span class="tag">HTML</span><span class="tag">CSS</span><span class="tag">JavaScript</span></div></div></a>
+<a class="card link-card" href="resumemaker/resume.html"><div class="media placeholder"><div class="number">04</div></div><div class="card-body"><h3>Online Resume</h3><p>Create, edit and print a professional resume directly inside the browser.</p><div class="tags"><span class="tag">HTML</span><span class="tag">CSS</span><span class="tag">JavaScript</span></div></div></a>
+<a class="card link-card" href="slot/slot.html"><div class="media placeholder"><div class="number">05</div></div><div class="card-body"><h3>Slot Machine</h3><p>Spin four reels and enjoy a simple browser-based slot machine experience.</p><div class="tags"><span class="tag">HTML</span><span class="tag">CSS</span><span class="tag">JavaScript</span></div></div></a>
+<a class="card link-card" href="qr-generator/index.html">
+    <div class="media placeholder">
+        <div class="number">06</div>
+    </div>
+
+    <div class="card-body">
+        <h3>DREI QR</h3>
+
+        <p>
+            A Free QR CODE generator
+        </p>
+
+        <div class="tags">
+            <span class="tag">HTML</span>
+            <span class="tag">CSS</span>
+            <span class="tag">JavaScript</span>
+            
+        </div>
+    </div>
+</a>
+<a class="card link-card" href="DREI-Garden-Game-Deluxe/index.html">
+    <div class="media placeholder">
+        <div class="number">07</div>
+    </div>
+
+    <div class="card-body">
+        <h3>FARMING GAME</h3>
+
+        <p>
+            A COZY FARMING GAME
+        </p>
+
+        <div class="tags">
+            <span class="tag">HTML</span>
+            <span class="tag">CSS</span>
+            <span class="tag">JavaScript</span>
+            
+        </div>
+    </div>
+</a>
+</div></section>
+<section class="section reveal"><div class="panel"><h3>More projects are coming soon.</h3><p>I will keep adding websites, games and school projects as I improve my skills.</p></div></section>
+<div class="footer-note">© 2026 DREI Portfolio</div></main></div></div>
+<script>
+/* Navigation is immediate; shared interactions handle the mobile drawer. */
+</script>
+
+<script src="../assets/portfolio-interactions.js?v=9.0"></script>
+<script src="../assets/page-experience.js?v=11.0"></script>
+</body></html>

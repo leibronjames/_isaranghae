@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rabbit Rush Racing 🐰</title>
+
+<style>
+*{
+    box-sizing:border-box;
+}
+
+body{
+    margin:0;
+    background:#222;
+    font-family:Arial;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    height:100vh;
+}
+
+#game{
+    width:360px;
+    height:600px;
+    background:#7ccf4a;
+    overflow:hidden;
+    position:relative;
+    border:5px solid white;
+    border-radius:20px;
+}
+
+#score{
+    position:absolute;
+    top:10px;
+    left:10px;
+    z-index:10;
+    background:white;
+    padding:8px 15px;
+    border-radius:10px;
+    font-weight:bold;
+}
+
+#road{
+    position:absolute;
+    width:220px;
+    height:100%;
+    left:70px;
+    background:#555;
+}
+
+.line{
+    position:absolute;
+    width:10px;
+    height:80px;
+    background:white;
+    left:175px;
+}
+
+#rabbit{
+    position:absolute;
+    bottom:30px;
+    left:150px;
+    font-size:55px;
+}
+
+.object{
+    position:absolute;
+    font-size:40px;
+}
+
+#buttons{
+    position:absolute;
+    bottom:10px;
+    width:100%;
+    display:flex;
+    justify-content:space-around;
+    z-index:20;
+}
+
+button{
+    font-size:30px;
+    padding:10px 25px;
+    border:none;
+    border-radius:15px;
+}
+
+#gameOver{
+    display:none;
+    position:absolute;
+    inset:0;
+    background:rgba(0,0,0,.8);
+    color:white;
+    text-align:center;
+    padding-top:220px;
+    z-index:50;
+}
+
+#gameOver h1{
+    font-size:40px;
+}
+</style>
+
+</head>
+
+<body>
+
+<div id="game">
+
+<div id="score">
+🥕 Score: <span id="points">0</span>
+</div>
+
+<div id="road"></div>
+
+<div class="line" style="top:0"></div>
+<div class="line" style="top:150px"></div>
+<div class="line" style="top:300px"></div>
+<div class="line" style="top:450px"></div>
+
+<div id="rabbit">🐰</div>
+
+
+<div id="buttons">
+<button onclick="moveLeft()">⬅️</button>
+<button onclick="moveRight()">➡️</button>
+</div>
+
+
+<div id="gameOver">
+<h1>Game Over</h1>
+<p>Score: <span id="final"></span></p>
+<button onclick="restart()">Restart 🔄</button>
+</div>
+
+</div>
+
+
+<script>
+
+let rabbit=document.getElementById("rabbit");
+let game=document.getElementById("game");
+let scoreText=document.getElementById("points");
+
+let rabbitX=150;
+let score=0;
+let speed=5;
+let running=true;
+
+
+function moveLeft(){
+    if(rabbitX>80){
+        rabbitX-=40;
+        rabbit.style.left=rabbitX+"px";
+    }
+}
+
+
+function moveRight(){
+    if(rabbitX<240){
+        rabbitX+=40;
+        rabbit.style.left=rabbitX+"px";
+    }
+}
+
+
+document.addEventListener("keydown",e=>{
+    if(e.key=="ArrowLeft") moveLeft();
+    if(e.key=="ArrowRight") moveRight();
+});
+
+
+function createObject(){
+
+    if(!running)return;
+
+    let obj=document.createElement("div");
+    obj.className="object";
+
+    let carrot=Math.random()>0.5;
+
+    obj.innerHTML=carrot?"🥕":"🌳";
+
+    obj.style.left=(90+Math.random()*120)+"px";
+    obj.style.top="-50px";
+
+    game.appendChild(obj);
+
+
+    let fall=setInterval(()=>{
+
+        let y=parseInt(obj.style.top);
+
+        obj.style.top=y+speed+"px";
+
+
+        let r=rabbit.getBoundingClientRect();
+        let o=obj.getBoundingClientRect();
+
+
+        if(
+            r.left<o.right &&
+            r.right>o.left &&
+            r.top<o.bottom &&
+            r.bottom>o.top
+        ){
+
+            if(carrot){
+                score+=10;
+                scoreText.innerHTML=score;
+                obj.remove();
+                clearInterval(fall);
+            }
+            else{
+                endGame();
+            }
+        }
+
+
+        if(y>600){
+            obj.remove();
+            clearInterval(fall);
+        }
+
+    },30);
+
+}
+
+
+let spawn=setInterval(createObject,900);
+
+
+
+function endGame(){
+
+    running=false;
+
+    document.getElementById("final").innerHTML=score;
+    document.getElementById("gameOver").style.display="block";
+
+    clearInterval(spawn);
+}
+
+
+function restart(){
+
+    location.reload();
+
+}
+
+
+setInterval(()=>{
+
+    if(running){
+        speed+=0.05;
+    }
+
+},1000);
+
+
+</script>
+
+</body>
